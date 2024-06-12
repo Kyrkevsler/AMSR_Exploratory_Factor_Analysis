@@ -1,0 +1,216 @@
+---
+title: |  
+ ![](C:/Users/admin/Documents/Krysler Files/R files/Problem Set 1/logo.jpg){width=1in}
+subtitle: "Exploratory Factor Analysis"
+author: "Group 6: Gimena, K.F., Dela Torre, F.D., Chua, F.C."
+date: "2022-12-09"
+output: 
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r libraries, include= FALSE}
+setwd('C:/Users/admin/Documents/Krysler Files/R files/Factor Analysis')
+library(ltm)
+library(psych)
+library(EFAtools)
+```
+
+## Setting up Data Frame
+```{r df, comment= ""}
+MMW <- read.csv('MMWSURVEY.csv')[, -1]
+MMW <- na.omit(MMW)
+options(width= 90)
+head(MMW, 6)
+```
+
+## Scale Reliability
+```{r alpha, comment= ""}
+cronbach.alpha(MMW)
+```
+
+*The overall internal consistency reliability is estimated at __80.7%__.*
+
+
+## Bartlett’s test of sphericity
+
+_Ho: the population correlation matrix is an identity matrix (variables are uncorrelated)_
+
+_Ha: the population correlation matrix is not an identity matrix (variables are correlated)_
+
+```{r cor, comment= ""}
+cor <- cor(MMW)
+cortest.bartlett(cor, n= nrow(MMW))
+```
+
+*The population correlation matrix is not an identity matrix (variables are correlated).*
+
+
+## Measure of Sampling Adequacy (MSA)
+```{r kmo, comment= ""}
+KMO(cor)
+```
+
+*The overall MSA of __0.902__ is considered excellent. Meanwhile, the individual MSA range from mostly good to excellent.*
+
+
+## Sample Size
+```{r sample, comment= ""}
+dim(MMW)
+```
+
+\newpage
+
+## Parallel Analysis 
+```{r fa.p, comment= ""}
+set.seed(123)
+fa.parallel(MMW, fa= "both", fm= "minres")
+```
+
+## Factor Analysis Model 
+```{r fa.m, comment= ""}
+f_model <- fa(MMW, nfactors= 5)
+f_model
+```
+
+## Specific details of the FA Model
+
+*Variance Accounted*
+```{r vac, comment= ""}
+f_model$Vaccounted
+```
+
+*Factor Correlations*
+```{r fc, comment= ""}
+f_model$Phi
+```
+
+*Factor Analysis Diagram*
+```{r fa.d, comment= ""}
+fa.diagram(f_model)
+```
+
+*Mean Item Complexity*
+```{r mic, comment= ""}
+f_model$complexity
+mean(f_model$complexity)
+```
+
+*The null model and objective function*
+```{r num, comment= ""}
+f_model$null.model
+```
+
+\newpage
+
+*Model*
+```{r m, comment= ""}
+f_model$null.dof
+```
+
+*Chi-square*
+```{r chi, comment= ""}
+f_model$null.chisq
+```
+
+*Root mean square error of approximation*
+```{r rmsea, comment= ""}
+f_model$RMSEA
+```
+
+*Tucker Lewis Index*
+```{r tli, comment= ""}
+f_model$TLI
+```
+
+\newpage
+
+## Factor Analysis Diagram using Varimax
+```{r fa.va, comment= ""}
+f_diagram.var <- fac(MMW, 5, rotate = "varimax")
+fa.diagram(f_diagram.var, main = "Varimax")
+```
+
+## Naming of Factors
+
+**Factor 1 (Problem-Solving Factor)**
+
+> POTS 5 -  I can tackle a challenging MMW problem.
+ 
+> POTS 6 - I believe I can get better at math.
+
+> POTS 8 - I can solve word problems.
+
+> POTS 17 - I ask questions when I am unsure of a problem.
+
+> POTS 18 - I’m certain I can figure out how to solve difficult math problems.
+
+> POTS 19 - Time spent learning why a solution works is time well spent.
+
+> POTS 21 - Even if the concepts in MMW class are hard, I can learn them.
+
+**Factor 2 (Accomplishment Factor)**
+
+> POTS 2 - I can work with a partner to find a solution to a problem.
+
+> POTS 3 - I feel accomplished when I solve a problem.
+
+> POTS 4 - I work hard in my MMW classes.
+
+> POTS 10 - I complete assignments outside of class.
+
+> POTS 22 - It’s important for me to do really well in MMW.
+
+> POTS 24 - I always find other ways to learn MMW like searching on the internet.
+
+**Factor 3 (Real-world Application Factor)**
+
+> POTS 15 - Discussing different solutions is a good way of learning MMW exercises.
+
+> POTS 16 - Achievement and effort in MMW class are likely to lead to job success later on.
+
+> POTS 20 - I can use what I learn in MMW class in other subjects.
+
+> POTS 23 - I can name several ways I use MMW topics in my day-to-day life.
+
+**Factor 4 (Subject Expectations Factor)**
+
+> POTS 1 - My MMW teacher has been unsuccessful with helping me to appreciate math.
+
+> POTS 7 - I find it difficult to focus during MMW class.
+
+> POTS 11 - My only interest in MMW is getting a passing score.
+
+> POTS 12 - I like doing MMW activities.
+
+> POTS 13 -  I think I will do/have done well in MMW this semester.
+
+> POTS 14 - MMW can be fun.
+
+**Factor 5 (Complacent Factor)**
+
+> POTS 9 - Getting the right answer is more important than understanding why the answer works.
+
+\newpage
+
+## Graph of the Selected Rotation
+```{r plot.va, comment= ""}
+plot(f_diagram.var$loadings[, 1],
+     f_diagram.var$loadings[, 2],
+     xlab = "Factor 1",
+     ylab = "Factor 2",
+     ylim = c(-1,1),
+     xlim = c(-1,1),
+     col = "red",
+     main = "Varimax Rotation") + 
+  abline(h = 0, v = 0)
+```
+
+
+\begin{center}
+END OF PROJECT
+\end{center}
+
